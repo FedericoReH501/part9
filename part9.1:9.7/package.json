@@ -5,10 +5,8 @@
   "main": "index.js",
   "scripts": {
     "calculateBmi": "ts-node bmiCalculator.ts",
-    "calculateExercises": "ts-node exerciseCalculator.ts"
-  },
-  "compilerOptions": {
-    "noImplicitAny": false
+    "calculateExercises": "ts-node exerciseCalculator.ts",
+    "dev": "ts-node-dev index.ts"
   },
   "author": "federico re",
   "license": "ISC",
