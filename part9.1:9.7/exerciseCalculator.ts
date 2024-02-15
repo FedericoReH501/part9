@@ -33,8 +33,8 @@ const rating = (average: number, target: number) => {
   };
 };
 
-const calculateExercises = (
-  dExcercise: string[],
+export const calculateExercises = (
+  dExcercise: number[],
   target: number,
 ): Analitycs => {
   let trainingDaysCount: number = 0;
@@ -55,7 +55,7 @@ const calculateExercises = (
   };
 };
 interface ValidDatas {
-  dExercise: string[];
+  dExercise: number[];
   target: number;
 }
 
@@ -63,7 +63,10 @@ const parsedData = (args: string[]): ValidDatas => {
   if (!argsAreValid(args)) {
     throw new Error("you must insert only numbers");
   }
-  return { dExercise: args.slice(3), target: Number(args[2]) };
+  return {
+    dExercise: args.slice(3).map((n) => Number(n)),
+    target: Number(args[2]),
+  };
 };
 
 try {
