@@ -1,12 +1,12 @@
+import pingRouter from "../routes/ping";
 import express from "express";
 const cors = require("cors");
 
 const app = express();
+
 app.use(cors());
-app.get("/api/ping", (_req, resp) => {
-  console.log("im here");
-  resp.send("pong");
-});
+
+app.use("/api/ping", pingRouter);
 
 const PORT = 3001;
 
