@@ -44,15 +44,21 @@ const genderParse = (data: unknown): Gender => {
 };
 
 const parseSsn = (data: unknown): string => {
-  if (!data || !isString(data)) {
-    throw new Error("incorrect or missing ssn");
+  if (data) {
+    if (!isString(data) || data.length < 36) {
+      throw new Error("incorrect ssn");
+    }
+    return data;
   }
-  return data;
+
+  return "";
 };
+
 export const toNewPatients = (object: unknown): newPatients => {
   if (!object || typeof object !== "object") {
     throw new Error("incorrect or missing data");
   }
+  console.log("object : ", object);
   if (
     "name" in object &&
     "ssn" in object &&

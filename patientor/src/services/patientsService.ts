@@ -1,6 +1,6 @@
 import patientsData from "../data/patients";
 import { Patients, frontendPatients, newPatients } from "../types/Patients";
-//import { v1 as uuid } from "uuid";
+import { v1 as uuid } from "uuid";
 
 const getPatients = (): Patients[] => {
   return patientsData as Patients[];
@@ -17,8 +17,8 @@ const getFrontendPatients = (): frontendPatients[] => {
 };
 
 const addPatient = (newPatients: newPatients): Patients => {
-  //const id: string = uuid();
-  const addedPatient = { id: "1234534342342342", ...newPatients };
+  const id: string = uuid();
+  const addedPatient = { id, ...newPatients };
   patientsData.push(addedPatient);
   return addedPatient;
 };
