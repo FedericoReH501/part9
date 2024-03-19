@@ -5,9 +5,6 @@ const isString = (data: unknown): data is string => {
 };
 
 const isDate = (data: string): boolean => {
-  console.log("date:", data);
-  console.log("parser:", Date.parse(data.toString()));
-  console.log("is date?", Boolean(Date.parse(data)));
   return Boolean(Date.parse(data));
 };
 
@@ -15,7 +12,7 @@ const dateParse = (data: unknown): string => {
   if (!data || !isString(data) || !isDate(data)) {
     throw new Error(" Error, insert a valid date!");
   }
-  console.log("date parsed!");
+
   return data;
 };
 
@@ -58,7 +55,6 @@ export const toNewPatients = (object: unknown): newPatients => {
   if (!object || typeof object !== "object") {
     throw new Error("incorrect or missing data");
   }
-  console.log("object : ", object);
   if (
     "name" in object &&
     "ssn" in object &&
