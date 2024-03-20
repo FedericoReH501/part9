@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Content } from "./components/Content"
 import { Total } from "./components/Total"
 import { Header } from "./components/header"

@@ -9,7 +9,7 @@ export const Content = (props: ContentProps) => {
   return (
     <div>
       {props.coursParts.map((o) => (
-        <div>
+        <div key={o.name}>
           <h3>{o.name}</h3>
           <Part coursePart={o}></Part>
         </div>

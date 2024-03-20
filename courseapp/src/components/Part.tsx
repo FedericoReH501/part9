@@ -32,7 +32,7 @@ export const Part = (props: partProps) => {
       return (
         <div>
           <p>{props.coursePart.description}</p>
-          <p>requirements: {props.coursePart.requirements.map((r) => r)}</p>
+          <p>requirements: {props.coursePart.requirements.toString()}</p>
         </div>
       )
 
