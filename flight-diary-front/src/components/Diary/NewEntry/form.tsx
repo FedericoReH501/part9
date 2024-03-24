@@ -1,19 +1,41 @@
-import { useState } from "react"
-import { Visibility, Weather } from "../../../types/diary"
+import React, { useState } from "react"
+import { DiaryEntry, Visibility, Weather } from "../../../types/diary"
+import { addEntry } from "../../../services/diary"
+import axios from "axios"
 
-const NewEntryForm = () => {
-  const [visibility, SetVisibility] = useState<null | Visibility>(null)
-  const [weather, Setweather] = useState<null | Weather>(null)
-  const [date, setdate] = useState<null | string>(null)
-  const [comment, setcomment] = useState<null | string>(null)
-  console.log(visibility)
-  console.log(weather)
-  console.log(date)
-  console.log(comment)
+interface FormProps {
+  diaryes: DiaryEntry[]
+  setDiaryes: React.Dispatch<React.SetStateAction<DiaryEntry[]>>
+  setNotify: (message: string) => void
+}
+
+const NewEntryForm = (props: FormProps) => {
+  const [visibility, SetVisibility] = useState<Visibility>(" " as Visibility)
+  const [weather, Setweather] = useState<Weather>("" as Weather)
+  const [date, setdate] = useState<string>("")
+  const [comment, setcomment] = useState<string>("")
+
+  const onSubmit = async (event: React.SyntheticEvent) => {
+    event.preventDefault()
+    const newEntry = {
+      date,
+      visibility,
+      weather,
+      comment,
+    }
+    try {
+      await addEntry(newEntry)
+      props.setDiaryes(props.diaryes.concat(newEntry))
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        props.setNotify(error.message)
+      }
+    }
+  }
 
   return (
     <>
-      <form>
+      <form onSubmit={onSubmit}>
         <div>
           <h3>Date : </h3>
           <input
@@ -32,8 +54,9 @@ const NewEntryForm = () => {
                   type="radio"
                   name="visibility"
                   value={e}
-                  onChange={() => {
-                    SetVisibility(e)
+                  onChange={(event) => {
+                    const value = event.target.value as Visibility
+                    SetVisibility(value)
                   }}
                 ></input>
                 <label>{e}</label>
@@ -50,8 +73,8 @@ const NewEntryForm = () => {
                   type="radio"
                   name="weather"
                   value={e}
-                  onChange={() => {
-                    Setweather(e)
+                  onChange={(event) => {
+                    Setweather(event.target.value as Weather)
                   }}
                 ></input>
                 <label>{e}</label>
@@ -66,6 +89,9 @@ const NewEntryForm = () => {
             setcomment(e.target.value)
           }}
         ></input>
+        <div>
+          <button type="submit"> add </button>
+        </div>
       </form>
     </>
   )

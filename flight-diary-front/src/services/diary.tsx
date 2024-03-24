@@ -7,3 +7,8 @@ export const getEntryes = async () => {
   )
   return data.data
 }
+
+export const addEntry = async (data: DiaryEntry) => {
+  const addedEntry = await axios.post("http://localhost:3000/api/diaries", data)
+  return addedEntry.data
+}

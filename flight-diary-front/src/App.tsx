@@ -34,8 +34,12 @@ function App() {
   return (
     <>
       <Notify message={message}></Notify>
+      <NewEntryForm
+        diaryes={diaryes}
+        setDiaryes={setDiaryes}
+        setNotify={setNotify}
+      ></NewEntryForm>
       <Entry entryes={diaryes}></Entry>
-      <NewEntryForm></NewEntryForm>
     </>
   )
 }

@@ -8,7 +8,7 @@ const Entry = (props: EntryProps) => {
   return (
     <>
       {props.entryes.map((e) => (
-        <Content data={e}></Content>
+        <Content data={e} key={e.date}></Content>
       ))}
     </>
   )
