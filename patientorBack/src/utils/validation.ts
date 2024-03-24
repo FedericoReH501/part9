@@ -41,14 +41,10 @@ const genderParse = (data: unknown): Gender => {
 };
 
 const parseSsn = (data: unknown): string => {
-  if (data) {
-    if (!isString(data) || data.length < 36) {
-      throw new Error("incorrect ssn");
-    }
-    return data;
+  if (!isString(data)) {
+    throw new Error("incorrect ssn");
   }
-
-  return "";
+  return data;
 };
 
 export const toNewPatients = (object: unknown): newPatients => {
