@@ -1,4 +1,5 @@
 import { Diagnosis, Entry } from "../../types"
+import EntryDetails from "./EntryDetails/EntryDetails"
 
 interface Props {
   entries: Entry[]
@@ -28,6 +29,7 @@ const Entries = (props: Props) => {
                 </li>
               </ul>
             ))}
+            {<EntryDetails entry={e}></EntryDetails>}
           </div>
         )
       })}
