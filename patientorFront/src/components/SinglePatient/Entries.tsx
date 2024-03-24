@@ -1,10 +1,15 @@
-import { Entry } from "../../types"
+import { Diagnosis, Entry } from "../../types"
 
-interface props {
+interface Props {
   entries: Entry[]
+  diagnosisList: Diagnosis[]
 }
 
-const Entries = (props: props) => {
+const Entries = (props: Props) => {
+  const findDiagnose = (code: Diagnosis["code"]) => {
+    const result = props.diagnosisList.find((element) => element.code === code)
+    return result?.name
+  }
   return (
     <div>
       <h4>Entries:</h4>
@@ -18,7 +23,9 @@ const Entries = (props: props) => {
 
             {e.diagnosisCodes?.map((d) => (
               <ul key={d}>
-                <li>{d}</li>
+                <li>
+                  {d}: {findDiagnose(d)}
+                </li>
               </ul>
             ))}
           </div>

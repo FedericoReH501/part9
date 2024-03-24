@@ -1,10 +1,12 @@
 import { useParams } from "react-router-dom"
 import patientService from "../../services/patients"
 import { useEffect, useState } from "react"
-import { Patient } from "../../types"
+import { Diagnosis, Patient } from "../../types"
 import Entries from "./Entries"
-
-const SinglePatient = () => {
+interface Props {
+  diagnosisList: Diagnosis[]
+}
+const SinglePatient = (props: Props) => {
   const [patient, setpatient] = useState<Patient>()
   const param = useParams()
 
@@ -25,7 +27,10 @@ const SinglePatient = () => {
         <p>occupation: {patient.occupation}</p>
         <div>
           {patient.entries.length !== 0 ? (
-            <Entries entries={patient?.entries}></Entries>
+            <Entries
+              entries={patient?.entries}
+              diagnosisList={props.diagnosisList}
+            ></Entries>
           ) : null}
         </div>
       </>
