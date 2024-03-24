@@ -23,4 +23,12 @@ const addPatient = (newPatients: newPatients): Patients => {
   return addedPatient;
 };
 
-export default { getPatients, getFrontendPatients, addPatient };
+const findById = (id: string): Patients => {
+  const patient = patientsData.find((p) => p.id === id);
+  if (patient) {
+    return patient as Patients;
+  }
+  throw new Error("invalid id");
+};
+
+export default { getPatients, getFrontendPatients, addPatient, findById };
