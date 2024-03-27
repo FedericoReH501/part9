@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom"
-import patientService from "../../services/patients"
-import { useEffect, useState } from "react"
+
 import { Diagnosis, Patient } from "../../types"
 import Entries from "./Entries"
 import AddEntryModal from "../AddEntryModal"
