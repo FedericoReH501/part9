@@ -2,6 +2,7 @@ import express from "express";
 import patientsService from "../services/patientsService";
 import { frontendPatients, newPatients, Patients } from "../types/Patients";
 import { toNewPatients } from "../utils/validation";
+import { Entry } from "../types/Entry";
 const router = express.Router();
 
 router.get("/", (_req, res) => {
@@ -35,4 +36,10 @@ router.get("/:id", (req, res) => {
     }
   }
 });
+
+router.post("/:id", (req, res) => {
+  const addedEntry: Entry = patientsService.addEntry(req.params.id, req.body);
+  res.json(addedEntry);
+});
+
 export default router;

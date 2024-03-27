@@ -13,7 +13,7 @@ import SinglePatient from "./components/SinglePatient"
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([])
-  const [dignosis, setdignosis] = useState<Diagnosis[]>([])
+  const [diagnosis, setdiagnosis] = useState<Diagnosis[]>([])
   useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`)
 
@@ -21,7 +21,7 @@ const App = () => {
       const patientsData = await patientService.getAll()
       setPatients(patientsData)
       const diagnosisData = await diagnosisService.getAll()
-      setdignosis(diagnosisData)
+      setdiagnosis(diagnosisData)
     }
     void fetchData()
   }, [])
@@ -49,7 +49,13 @@ const App = () => {
             />
             <Route
               path="/:id"
-              element={<SinglePatient diagnosisList={dignosis}></SinglePatient>}
+              element={
+                <SinglePatient
+                  patients={patients}
+                  setPatients={setPatients}
+                  diagnosisList={diagnosis}
+                ></SinglePatient>
+              }
             ></Route>
           </Routes>
         </Container>

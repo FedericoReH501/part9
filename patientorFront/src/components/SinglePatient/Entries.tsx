@@ -1,3 +1,4 @@
+import { Paper } from "@mui/material"
 import { Diagnosis, Entry } from "../../types"
 import EntryDetails from "./EntryDetails/EntryDetails"
 
@@ -17,7 +18,11 @@ const Entries = (props: Props) => {
 
       {props.entries.map((e) => {
         return (
-          <div key={e.id}>
+          <Paper
+            key={e.id}
+            elevation={10}
+            sx={{ padding: 3, marginBottom: 3, borderRadius: 4 }}
+          >
             <p>
               {e.date}, {e.description}
             </p>
@@ -30,7 +35,7 @@ const Entries = (props: Props) => {
               </ul>
             ))}
             {<EntryDetails entry={e}></EntryDetails>}
-          </div>
+          </Paper>
         )
       })}
     </div>
