@@ -14,6 +14,8 @@ import SinglePatient from "./components/SinglePatient"
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([])
   const [diagnosis, setdiagnosis] = useState<Diagnosis[]>([])
+  const [message, setMessage] = useState<string | null>(null)
+
   useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`)
 
@@ -51,6 +53,8 @@ const App = () => {
               path="/:id"
               element={
                 <SinglePatient
+                  message={message}
+                  setMessage={setMessage}
                   patients={patients}
                   setPatients={setPatients}
                   diagnosisList={diagnosis}

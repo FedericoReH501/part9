@@ -36,17 +36,19 @@ const findById = (id: string): Patients => {
 };
 
 const addEntry = (patientId: string, newEntry: EntryWithoutId) => {
+  console.log("patient services: adding entry");
   const id: string = uuid();
   const entryToAdd: Entry = { ...newEntry, id };
-  const patientToUpadate = patientsData.find(
-    (patient) => patient.id === patientId,
-  ) as Patients;
-  patientToUpadate.entries.push(entryToAdd);
+
   const index: number = patientsData.findIndex((p) => p.id === patientId);
+
+  const patientToUpadate = patientsData[index];
+
+  patientToUpadate.entries.push(entryToAdd);
+
   patientsData[index] = patientToUpadate;
-  console.log("adding entry in services, updated patients", patientToUpadate);
-  console.log("------------------------------");
-  return entryToAdd;
+
+  return patientToUpadate;
 };
 
 export default {

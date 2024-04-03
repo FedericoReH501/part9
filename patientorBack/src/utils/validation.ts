@@ -1,3 +1,4 @@
+import { Discharge, EntryWithoutId, HealthCheckRating } from "../types/Entry";
 import { Gender, newPatients } from "../types/Patients";
 
 const isString = (data: unknown): data is string => {
@@ -46,8 +47,28 @@ const parseSsn = (data: unknown): string => {
   }
   return data;
 };
+const parseTextFields = (data: unknown): string => {
+  if (!data || !isString(data)) {
+    throw new Error("text is missing!!");
+  }
 
+  if (data.length === 0) {
+    throw new Error("text is to short!!");
+  }
+  return data;
+};
+const isDischarge = (data: unknown): data is Discharge => {
+  console.log("type of data discharge", typeof data);
+  return true;
+};
+const parseDischarge = (data: unknown): Discharge => {
+  if (!data || !isDischarge(data)) {
+    throw new Error("missing or malformatted discharge");
+  }
+  return data;
+};
 export const toNewPatients = (object: unknown): newPatients => {
+  console.log("validating new entry");
   if (!object || typeof object !== "object") {
     throw new Error("incorrect or missing data");
   }
@@ -67,6 +88,52 @@ export const toNewPatients = (object: unknown): newPatients => {
       entries: [],
     };
     return newPatients;
+  }
+  throw new Error("some field are missing");
+};
+
+export const toNewEntry = (object: unknown) => {
+  if (!object || typeof object !== "object") {
+    throw new Error("incorrect or missing data");
+  }
+  if (
+    "type" in object &&
+    "date" in object &&
+    "description" in object &&
+    "specialist" in object
+  ) {
+    const newBaseEntry = {
+      date: dateParse(object.date),
+      description: parseTextFields(object.description),
+      specialist: parseTextFields(object.specialist),
+    };
+    if (object.type === "Hospital" && "discharge" in object) {
+      const newEntry: EntryWithoutId = {
+        type: object.type,
+        ...newBaseEntry,
+        discharge: parseDischarge(object.discharge),
+      };
+
+      return newEntry;
+    }
+    if (object.type === "HealthCheck" && "healthCheckRating" in object) {
+      const newEntry: EntryWithoutId = {
+        type: object.type,
+        ...newBaseEntry,
+        healthCheckRating: object.healthCheckRating as HealthCheckRating,
+      };
+
+      return newEntry;
+    }
+    if (object.type === "OccupationalHealthcare" && "employerName" in object) {
+      const newEntry: EntryWithoutId = {
+        type: object.type,
+        ...newBaseEntry,
+        employerName: parseTextFields(object.employerName),
+      };
+
+      return newEntry;
+    }
   }
   throw new Error("some field are missing");
 };

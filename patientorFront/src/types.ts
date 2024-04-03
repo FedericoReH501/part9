@@ -53,14 +53,19 @@ export type Entry =
   | OccupationalHealthcareEntry
   | HospitalEntry
 
-type UnionOmit<T, K extends string | number | symbol> = T extends unknown
-  ? Omit<T, K>
-  : never
-
 export type EntryWithoutId =
   | Omit<HospitalEntry, "id">
   | Omit<HealthCheckEntry, "id">
   | Omit<OccupationalHealthcareEntry, "id">
+
+export interface BasicFormData {
+  type: "HealthCheck" | "OccupationalHealthcare" | "Hospital"
+
+  description: string
+  date: string
+  specialist: string
+  diagnosisCodes?: Array<Diagnosis["code"]>
+}
 
 export enum Gender {
   Male = "male",

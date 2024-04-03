@@ -4,9 +4,11 @@ import { Diagnosis, Patient } from "../../types"
 import Entries from "./Entries"
 import AddEntryModal from "../AddEntryModal"
 interface Props {
+  message: string | null
   diagnosisList: Diagnosis[]
   patients: Patient[]
   setPatients: React.Dispatch<React.SetStateAction<Patient[]>>
+  setMessage: React.Dispatch<React.SetStateAction<string | null>>
 }
 const SinglePatient = (props: Props) => {
   const param = useParams()
@@ -24,6 +26,8 @@ const SinglePatient = (props: Props) => {
           id={patient.id}
           patients={props.patients}
           setPatients={props.setPatients}
+          message={props.message}
+          setMessage={props.setMessage}
         ></AddEntryModal>
         <div>
           {patient.entries.length !== 0 ? (

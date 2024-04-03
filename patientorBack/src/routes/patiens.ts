@@ -1,8 +1,7 @@
 import express from "express";
 import patientsService from "../services/patientsService";
 import { frontendPatients, newPatients, Patients } from "../types/Patients";
-import { toNewPatients } from "../utils/validation";
-import { Entry } from "../types/Entry";
+import { toNewEntry, toNewPatients } from "../utils/validation";
 const router = express.Router();
 
 router.get("/", (_req, res) => {
@@ -29,7 +28,6 @@ router.get("/:id", (req, res) => {
   try {
     const patient = patientsService.findById(req.params.id);
     res.json(patient);
-    console.log(patient as Patients);
   } catch (error) {
     if (error instanceof Error) {
       res.status(400).send(error.message);
@@ -38,8 +36,18 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/:id", (req, res) => {
-  const addedEntry: Entry = patientsService.addEntry(req.params.id, req.body);
-  res.json(addedEntry);
+  try {
+    const newEntry = toNewEntry(req.body);
+    const updatetPatient: Patients = patientsService.addEntry(
+      req.params.id,
+      newEntry,
+    );
+    res.json(updatetPatient);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).send(error.message);
+    }
+  }
 });
 
 export default router;

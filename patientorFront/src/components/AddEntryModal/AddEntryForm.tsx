@@ -1,15 +1,15 @@
 import React, { ChangeEvent, useState } from "react"
 import {
+  BasicFormData,
   Diagnosis,
   Discharge,
-  Entry,
   EntryWithoutId,
+  HealthCheckRating,
   Patient,
-  Types,
 } from "../../types"
 import {
+  Box,
   Button,
-  Container,
   FormControl,
   InputLabel,
   MenuItem,
@@ -17,26 +17,41 @@ import {
   SelectChangeEvent,
   TextField,
 } from "@mui/material"
-import patientService from "../../services/patients"
+import patietServices from "../../services/patients"
+import HospitalEntryForm from "./HospitalEntryForm"
+import HealthcheckEntryForm from "./HealthCheckEntryForm"
+import OccupationalHealthcareEntryForm from "./OccupationalHealthcareEntryForm"
+import { isAxiosError } from "axios"
 
 interface Props {
   diagnosis: Diagnosis[]
   id: string
   patients: Patient[]
   setPatients: React.Dispatch<React.SetStateAction<Patient[]>>
+  setMessage: React.Dispatch<React.SetStateAction<string | null>>
 }
 const AddEntryForm = (props: Props) => {
-  const [type, settype] = useState("")
-  const [diagnosisCodes, setDiagnosisCodes] = useState<Diagnosis["code"][]>([])
-  const [date, setDate] = useState("")
+  const [type, settype] = useState<
+    "HealthCheck" | "OccupationalHealthcare" | "Hospital"
+  >("HealthCheck")
+  const [diagnosisCodes, setDiagnosisCodes] = useState<
+    Array<Diagnosis["code"]>
+  >([])
+  const [date, setDate] = useState<string>("")
+  const [dateError, setDateError] = useState(false)
   const [description, setDescription] = useState("")
   const [specialist, setSpecialist] = useState("")
   const [discharge, setDischarge] = useState<Discharge>({} as Discharge)
   const [employerName, setemployerName] = useState("second")
-  const [healthCheckRating, setHealthCheckRating] = useState(0)
+  const [criteria, setCriteria] = useState("")
+  const [dischargeDate, setDischargeDate] = useState("")
+  const [healthCheckRating, setHealthCheckRating] =
+    useState<HealthCheckRating>(0)
 
   const handleTypeChange = (e: SelectChangeEvent<string>): void => {
-    settype(e.target.value)
+    settype(
+      e.target.value as "HealthCheck" | "OccupationalHealthcare" | "Hospital"
+    )
   }
 
   const handleDescriptionChange = (
@@ -55,64 +70,77 @@ const AddEntryForm = (props: Props) => {
   const assertNever = (type: never): never => {
     throw new Error(`non handled case:${JSON.stringify(type)}`)
   }
-
-  const onSubmit = async (e: React.SyntheticEvent) => {
-    e.preventDefault()
-    const newBaseEntry = {
-      date,
-      description,
-      specialist,
-      diagnosisCodes,
-    }
-
-    switch (type) {
+  const createNewEntry = (basicformData: BasicFormData): EntryWithoutId => {
+    switch (basicformData.type) {
       case "Hospital":
         const newHospitalEntry: EntryWithoutId = {
-          type,
-          ...newBaseEntry,
+          ...basicformData,
+          type: "Hospital",
           discharge,
         }
-        await patientService.addEntry(props.id, newHospitalEntry)
-        break
-      case "OccupationalHealthcare":
-        const NewOccupationalEntry: EntryWithoutId = {
-          type,
-          ...newBaseEntry,
-          employerName,
-        }
-        const response = await patientService.addEntry(
-          props.id,
-          NewOccupationalEntry
-        )
-        console.log("props patients:", props.patients)
-        props.setPatients(
-          props.patients.map((p) => {
-            console.log("test:", p)
-            if (p.id === props.id) {
-              const updatedPatient = p
-              updatedPatient.entries.push(response)
-              return updatedPatient
-            }
-            return p
-          })
-        )
-        break
+        return newHospitalEntry
 
       case "HealthCheck":
-        const NewHealthcheckEntry: EntryWithoutId = {
-          type,
-          ...newBaseEntry,
+        const newHealthEntry: EntryWithoutId = {
+          ...basicformData,
+          type: "HealthCheck",
           healthCheckRating,
         }
-        await patientService.addEntry(props.id, NewHealthcheckEntry)
-        break
+        return newHealthEntry
+
+      case "OccupationalHealthcare":
+        const newOccupationalHealthcareEntry: EntryWithoutId = {
+          ...basicformData,
+          type: "OccupationalHealthcare",
+          employerName,
+        }
+        return newOccupationalHealthcareEntry
 
       default:
-        break
+        return assertNever(basicformData.type)
+    }
+  }
+  const onSubmit = async (e: React.SyntheticEvent) => {
+    console.log("on submit")
+    e.preventDefault()
+    setDischarge({ date: dischargeDate, criteria })
+    if (!date) {
+    }
+
+    const basicformData: BasicFormData = {
+      type,
+      date,
+      description,
+      diagnosisCodes,
+      specialist,
+    }
+
+    const formValue = createNewEntry(basicformData)
+    try {
+      const updatedPatient: Patient = await patietServices.addEntryTo(
+        props.id,
+        formValue
+      )
+      const updatedPatientsList: Patient[] = props.patients.map((p) => {
+        if (p.id == props.id) {
+          return updatedPatient
+        }
+        return p
+      })
+      props.setPatients(updatedPatientsList)
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.log("axios erro")
+        props.setMessage(error.message)
+        setTimeout(() => {
+          props.setMessage(null)
+        }, 3000)
+      }
+      console.log("errore sconosciuto", error)
     }
   }
   return (
-    <Container sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%" }} component="form" onSubmit={onSubmit}>
       <input
         style={{ marginBottom: 10 }}
         type="date"
@@ -120,17 +148,23 @@ const AddEntryForm = (props: Props) => {
           setDate(e.target.value)
         }}
       ></input>
-
       <FormControl fullWidth sx={{ marginBottom: 2 }}>
         <InputLabel>Entry type:</InputLabel>
-        <Select value={type} label="Entry Type" onChange={handleTypeChange}>
-          {Object.values(Types).map((value) => {
-            return (
-              <MenuItem key={value} value={value}>
-                {value}
-              </MenuItem>
-            )
-          })}
+        <Select
+          value={type}
+          label="Entry Type"
+          onChange={handleTypeChange}
+          required
+        >
+          <MenuItem key={1} value="HealthCheck">
+            HealthCheck
+          </MenuItem>
+          <MenuItem key={2} value="Hospital">
+            Hospital
+          </MenuItem>
+          <MenuItem key={3} value="OccupationalHealthcare">
+            OccupationalHealthcare
+          </MenuItem>
         </Select>
       </FormControl>
 
@@ -141,6 +175,7 @@ const AddEntryForm = (props: Props) => {
           label="diagnosis"
           multiple
           onChange={handleDiagnChange}
+          required
         >
           {props.diagnosis.map((diagn) => (
             <MenuItem key={diagn.code} value={diagn.code}>
@@ -152,34 +187,38 @@ const AddEntryForm = (props: Props) => {
 
       <FormControl fullWidth>
         <TextField
+          required
           sx={{ marginBottom: 2 }}
           multiline
           rows={4}
           placeholder="Write Description Here"
-          defaultValue={""}
           onChange={handleDescriptionChange}
         />
       </FormControl>
       <FormControl fullWidth>
         <TextField
+          required
           sx={{ marginBottom: 2 }}
           placeholder="Write Specialist here"
-          defaultValue={""}
           onChange={handleSpecialistChange}
         />
       </FormControl>
-      <FormControl fullWidth>
-        <TextField
-          sx={{ marginBottom: 2 }}
-          placeholder="Empoyer Name"
-          defaultValue={""}
-          onChange={(e) => {
-            setemployerName(e.target.value)
-          }}
-        />
-      </FormControl>
-      <Button onClick={onSubmit}>Submit</Button>
-    </Container>
+      <OccupationalHealthcareEntryForm
+        type={type}
+        setEmployerName={setemployerName}
+      ></OccupationalHealthcareEntryForm>
+      <HealthcheckEntryForm
+        type={type}
+        healthCheckRating={healthCheckRating}
+        setHealthCheckRating={setHealthCheckRating}
+      ></HealthcheckEntryForm>
+      <HospitalEntryForm
+        type={type}
+        setCriteria={setCriteria}
+        setDischargeDate={setDischargeDate}
+      ></HospitalEntryForm>
+      <Button type="submit">Submit</Button>
+    </Box>
   )
 }
 
